@@ -18,8 +18,6 @@ export class CommentsService {
     private commentRepository: Repository<Comment>,
     @Inject('PRODUCT_REPOSITORY')
     private productRepository: Repository<Product>,
-    @Inject('USER_REPOSITORY')
-    private userRepository: Repository<User>,
   ) {}
 
   async findProductComments(productId: string) {

@@ -20,11 +20,7 @@ export class AuthService {
     const userExists = await this.usersService.findByEmail(createUserDto.email);
     if (userExists) throw new BadRequestException('User already exists');
 
-    const hashData = await bycrpt.hash(createUserDto.password, 10);
-    const newUser = await this.usersService.create({
-      ...createUserDto,
-      password: hashData,
-    });
+    const newUser = await this.usersService.create(createUserDto);
     const user = await this.usersService.findByEmail(newUser.email);
     const tokens = await this.getTokens(newUser.id, newUser.email);
 
@@ -100,7 +96,7 @@ export class AuthService {
       throw new ForbiddenException('Access Denied');
     const matchRefreshToken = user.refreshToken === refreshToken;
     if (!matchRefreshToken) throw new ForbiddenException('Access Denied');
-    const tokens = await this.getTokens((await user).id, (await user).email);
+    const tokens = await this.getTokens(user.id, user.email);
     await this.updateRefreshToken(user.id, tokens.refreshToken);
     return tokens;
   }

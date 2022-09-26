@@ -3,9 +3,10 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { DatabaseModule } from 'src/db-config/db.module';
 import { usersProviders } from './users.providers';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [JwtModule],
   controllers: [UsersController],
   providers: [...usersProviders, UsersService],
   exports: [UsersService],

@@ -7,9 +7,11 @@ import {
   UpdateDateColumn,
   Timestamp,
   OneToMany,
+  BeforeInsert,
 } from 'typeorm';
 import { Comment } from './comment.entity';
 import { Product } from './product.entity';
+import * as bycrpt from 'bcrypt';
 
 @Entity()
 export class User {
@@ -19,13 +21,13 @@ export class User {
   @Column({ unique: true })
   name: string;
 
-  @Column({ length: 255 })
+  @Column({ length: 255, select: false })
   password: string;
 
   @Column({ unique: true })
   email: string;
 
-  @Column()
+  @Column({ select: false })
   refreshToken: string;
 
   @CreateDateColumn({ type: 'timestamp' })
@@ -39,4 +41,8 @@ export class User {
 
   @OneToMany(() => Comment, (comment) => comment.user)
   comments: Comment[];
+
+  @BeforeInsert() async hashPassword() {
+    this.password = await bycrpt.hash(this.password, 10);
+  }
 }

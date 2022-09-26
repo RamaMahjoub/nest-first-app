@@ -7,9 +7,11 @@ import {
   Param,
   Post,
   Put,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Request } from 'express';
 import { AccessTokenGuard } from 'src/guards/accessToken.guard';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/createComment.dto';
@@ -31,16 +33,12 @@ export class CommentsController {
   @Post(':productId')
   create(
     @Param('productId') productId: string,
-    @Headers('Authorization') auth: string,
+    @Req() req: Request,
     @Body() createCommentDto: CreateCommentDto,
   ) {
-    const jwt = auth.replace('Bearer ', '');
-    const json = this.jwtService.decode(jwt, { json: true }) as {
-      uuid: string;
-    };
     return this.commentsService.create(
       createCommentDto,
-      json['sub'],
+      req.user['sub'],
       productId,
     );
   }
@@ -49,30 +47,19 @@ export class CommentsController {
   @Put(':commentId')
   update(
     @Param('commentId') commentId: string,
-    @Headers('Authorization') auth: string,
+    @Req() req: Request,
     @Body() updateCommentDto: UpdateCommentDto,
   ) {
-    const jwt = auth.replace('Bearer ', '');
-    const json = this.jwtService.decode(jwt, { json: true }) as {
-      uuid: string;
-    };
     return this.commentsService.update(
       updateCommentDto,
-      json['sub'],
+      req.user['sub'],
       commentId,
     );
   }
 
   @UseGuards(AccessTokenGuard)
   @Delete(':commentId')
-  delete(
-    @Param('commentId') commentId: string,
-    @Headers('Authorization') auth: string,
-  ) {
-    const jwt = auth.replace('Bearer ', '');
-    const json = this.jwtService.decode(jwt, { json: true }) as {
-      uuid: string;
-    };
-    return this.commentsService.delete(json['sub'], commentId);
+  delete(@Param('commentId') commentId: string, @Req() req: Request) {
+    return this.commentsService.delete(req.user['sub'], commentId);
   }
 }

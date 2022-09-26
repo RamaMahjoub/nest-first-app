@@ -8,7 +8,7 @@ import { usersProviders } from '../users/users.providers';
 import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [JwtModule, DatabaseModule],
+  imports: [JwtModule],
   controllers: [CommentsController],
   providers: [
     ...commentsProviders,

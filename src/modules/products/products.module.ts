@@ -8,7 +8,7 @@ import { productsProviders } from './products.providers';
 import { usersProviders } from '../users/users.providers';
 
 @Module({
-  imports: [JwtModule, DatabaseModule, UsersModule],
+  imports: [JwtModule, UsersModule],
   controllers: [ProductsController],
   providers: [...usersProviders, ...productsProviders, ProductsService],
 })

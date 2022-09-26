@@ -8,7 +8,7 @@ import { UsersModule } from '../users/users.module';
 import { DatabaseModule } from 'src/db-config/db.module';
 
 @Module({
-  imports: [JwtModule.register({}), DatabaseModule, UsersModule],
+  imports: [JwtModule.register({}), UsersModule],
   controllers: [AuthController],
   providers: [AuthService, RefreshTokenStrategy, AccessTokenStrategy],
 })

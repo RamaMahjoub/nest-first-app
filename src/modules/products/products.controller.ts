@@ -7,9 +7,12 @@ import {
   Param,
   Post,
   Put,
+  Req,
   UseGuards,
+  UsePipes,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Request } from 'express';
 import { AccessTokenGuard } from 'src/guards/accessToken.guard';
 import { CreateProductDto } from './dto/createProduct.dto';
 import { UpdateProductDto } from './dto/updateProduct.dto';
@@ -24,29 +27,18 @@ export class ProductsController {
 
   @UseGuards(AccessTokenGuard)
   @Post()
-  create(
-    @Body() createProductDto: CreateProductDto,
-    @Headers('Authorization') auth: string,
-  ) {
-    const jwt = auth.replace('Bearer ', '');
-    const json = this.jwtService.decode(jwt, { json: true }) as {
-      uuid: string;
-    };
-    return this.productsService.create(json['sub'], createProductDto);
+  create(@Req() req: Request, @Body() createProductDto: CreateProductDto) {
+    return this.productsService.create(req.user['sub'], createProductDto);
   }
 
   @UseGuards(AccessTokenGuard)
   @Put(':id')
   update(
     @Param('id') id: string,
-    @Headers('Authorization') auth: string,
+    @Req() req: Request,
     @Body() updateProductDtp: UpdateProductDto,
   ) {
-    const jwt = auth.replace('Bearer ', '');
-    const json = this.jwtService.decode(jwt, { json: true }) as {
-      uuid: string;
-    };
-    return this.productsService.update(id, json['sub'], updateProductDtp);
+    return this.productsService.update(id, req.user['sub'], updateProductDtp);
   }
 
   @Get()
@@ -61,14 +53,7 @@ export class ProductsController {
 
   @UseGuards(AccessTokenGuard)
   @Delete(':id')
-  deleteProduct(
-    @Headers('Authorization') auth: string,
-    @Param('id') id: string,
-  ) {
-    const jwt = auth.replace('Bearer ', '');
-    const json = this.jwtService.decode(jwt, { json: true }) as {
-      uuid: string;
-    };
-    return this.productsService.deleteProduct(json['sub'], id);
+  deleteProduct(@Req() req: Request, @Param('id') id: string) {
+    return this.productsService.deleteProduct(req.user['sub'], id);
   }
 }
